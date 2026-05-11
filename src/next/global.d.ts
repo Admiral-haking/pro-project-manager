@@ -1,82 +1,52 @@
-import type { FilterQuery, Model, PipelineStage, UpdateQuery, UpdateWithAggregationPipeline, UpdateWriteOpResult } from "mongoose";
-import type { GridFSFile } from "mongodb";
-import type { OpenDialogOptions, OpenDialogReturnValue } from "electron";
 import type { ReactNode } from "react";
-import type { GitData } from "@electron/terminal/components/git"
-import type { SSHConfig } from "@electron/ssh/components/execute"
-
+import type { HistoryEntry, SessionType, SessionsManager } from "@electron/backend/session";
 export { };
 
 declare global {
-  type ModelsNames = "Project" |
-    "Category" |
-    "Note" |
-    "Repo" |
-    "Contractor" |
-    "Server" |
-    "BashScript" |
-    "Setting" |
-    "Evidence" |
-    "Reminder"
 
+  type LocalSessionOptions = Parameters<SessionsManager["createLocal"]>[0];
+  type SshSessionOptions = Parameters<SessionsManager["createSsh"]>[0];
 
   interface Window {
-    electron: {
-      platform: NodeJS.Platform;
-      versions: NodeJS.ProcessVersions;
-      browser: {
-        min: () => void,
-        exit: () => void
-      },
-      db: {
-        find: <T = any>(collection: ModelsNames) => Promise<T[]>
-        list: <T = any>(collection: ModelsNames, pipes: PipelineStage[]) => Promise<T[]>
-        doc: <T = any>(collection: ModelsNames, pipes: PipelineStage[]) => Promise<T>
-        save: (collection: ModelsNames, ...doc: any[]) => Promise<any[]>
-        update: (collection: ModelsNames, filter: FilterQuery<any>, update?: UpdateWithAggregationPipeline | UpdateQuery<any>, options?: any) => Promise<UpdateWriteOpResult>,
-        remove: (collection: ModelsNames, filter: FilterQuery<any>) => any,
-      },
-      gridfs: {
-        saveBase64: (name: string, contentType: string, base64: string, meta?: Record<string, any>) => Promise<GridFSFile>
-        list: (limit?: number, skip?: number) => Promise<GridFSFile[]>
-        get: (id: string) => Promise<{ file: GridFSFile; base64: string }>
-        remove: (id: string) => Promise<boolean>
-        saveFromPath: (filePath: string, meta?: Record<string, any>, file?: File) => Promise<string>
-        onFileDrop: (callback: (paths: string[]) => void) => () => void
-      }
-      dialog: {
-        openFile: (options?: OpenDialogOptions) => Promise<OpenDialogReturnValue>
-        confirm: (message: string) => Promise<boolean>
-      },
-      terminal: {
-        create: () => Promise<string>
-        close: (id: string) => Promise<void>
-        write: (id: string, input: string) => void
-        onData: (id: string, callback: (data: string) => void) => () => void
-        resize: (id: string, cols: number, rows: number) => void,
-        createBash: (content: string) => Promise<string>
-        execute: (script: string, args?: string[]) => Promise<string>,
-        copyFiles: (source: string, dest: string, ignore: string[]) => void
-        git: (path: string) => Promise<GitData>
-      }
-      onMessage: (callback: (d: Record<string, any>) => any) => () => void
-      chat: (payload: {
-        messages: {
-          [k: string]: any;
-          role: Role;
-          content?: string;
-          name?: string;
-          tool_call_id?: string;
-        }[];
-      }) => Promise<any>,
-      ssh: {
-        run: (cfg: SSHConfig,
-          command: string) => Promise<string>
-      }
-    };
-
+    electron?: {
+      config?: {
+        getMongoUri?: () => Promise<{ mongoUri: string }>;
+        setMongoUri?: (uri: string) => Promise<{ ok: boolean; mongoUri: string }>;
+      };
+      servers?: {
+        list?: () => Promise<any>;
+        get?: (id: string) => Promise<any>;
+        save?: (payload: { id?: string; title: string; host: string; port?: string; users?: any[] }) => Promise<any>;
+      };
+      projects?: {
+        list?: (payload?: { categoryId?: string }) => Promise<any>;
+        get?: (id: string) => Promise<any>;
+        save?: (payload: { id?: string; title: string; priority?: number; description?: string; categoryIds?: string[] }) => Promise<any>;
+        delete?: (id: string) => Promise<{ ok: boolean }>;
+      };
+      categories?: {
+        list?: () => Promise<Array<{ id: string; title: string }>>;
+        create?: (title: string) => Promise<{ id: string; title: string }>;
+      };
+      sessions?: {
+        createLocal?: (opts: LocalSessionOptions) => Promise<{ id: string; name: string; type: SessionType }>;
+        createSsh?: (opts: SshSessionOptions) => Promise<{ id: string; name: string; type: SessionType }>;
+        list?: () => Promise<Array<{ id: string; name: string; type: SessionType }>>;
+        write?: (id: string, data: string) => Promise<void>;
+        resize?: (id: string, cols: number, rows: number) => Promise<void>;
+        sendCommand?: (id: string, cmd: string) => Promise<HistoryEntry>;
+        getHistory?: (id: string) => Promise<HistoryEntry[]>;
+        close?: (id: string) => Promise<void>;
+        onData?: (cb: (payload: { id: string; data: string }) => void) => () => void;
+      };
+      window?: {
+        close?: () => Promise<void>;
+        minimize?: () => Promise<void>;
+        maximize?: () => Promise<void>;
+      };
+      newTerminal: (id: string) => any
+    }
   }
 
   type ChildProp = { children: ReactNode }
-  type GSFile = GridFSFile
 }

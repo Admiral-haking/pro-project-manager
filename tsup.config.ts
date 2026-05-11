@@ -2,8 +2,8 @@ import { defineConfig } from 'tsup';
 
 export default defineConfig({
   entry: {
-    main: 'src/electron/main.ts',
-    preload: 'src/electron/preload.ts',
+    main: 'src/electron/main/index.ts',
+    preload: 'src/electron/preload/index.ts',
   },
   format: ['cjs'],
   sourcemap: true,

@@ -1,69 +1,74 @@
-"use client";
-
-import { AppBar, Badge, Box, CircularProgress, IconButton, Stack, Toolbar, Typography } from "@mui/material";
-import { DeployIcon, ExitIcon, MinesIcon } from "components/icons";
-import Image from "next/image";
-import logo from "@next/assets/hippogriff.png"
-import { useDeploy } from "@next/deploy/context";
+import { Box, IconButton, Stack } from "@mui/material";
+import AppButtons from "./AppButtons";
+import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
+import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
+import Link from "next/link";
+import SearchBox from "@next/components/search";
+import AppMenu from "./Menu";
+import { TerminalIcon } from "@next/components/icons";
+import { toast } from "sonner";
 
 export default function Header() {
-
-    const { deploying, deploys, open } = useDeploy();
-
-    return <AppBar
-        position="fixed"
+    return <Stack
+        direction="row"
+        gap={1}
+        alignItems="center"
+        component="nav"
         className="header"
-        sx={theme => ({ zIndex: 999999, boxShadow: 'none', borderBottom: `1px solid ${theme.palette.divider}`, })}
-    >
-        <Stack direction="row" gap={1} sx={{ pl: 1 }} alignItems="center">
+        sx={{ p: 1, px: 2, width: '100%' }}>
 
-            <Image
-                src={logo.src}
-                width={24}
-                height={24}
-                alt="logo"
-            />
+        <AppButtons />
 
-            <Typography variant="caption" fontWeight="bold">
-                Project Manager Pro
-            </Typography>
+        <Space />
 
-            <Box sx={{ flex: '1 1 auto' }} />
-            {
-                !!deploys && <Stack direction="row" alignItems="center" gap={2} sx={{ px: 1, bgcolor: 'warning.main', color: "black" }}>
-                    {
-                        !!deploying && <>
-                            <CircularProgress size={13} color="inherit" thickness={4} />
-                            <Typography fontSize={12} color="inherit">
-                                {deploying} is in progress
-                            </Typography>
-                        </>
-                    }
-                    <Stack direction="row" alignItems="center">
-                        <IconButton className="noDrag" onClick={open}>
-                            <DeployIcon width={18} height={18} />
-                        </IconButton>
-                        <Typography fontSize={12} color="inherit" fontWeight="bold">
-                            {deploys}
-                        </Typography>
-                    </Stack>
-                </Stack>
-            }
-            <Stack direction="row" alignItems="center">
-                <IconButton className="noDrag" onClick={() => window.electron.browser.min()} sx={{
-                    borderRadius: 0,
-                }}>
-                    <MinesIcon width={18} height={18} />
-                </IconButton>
-                <IconButton className="noDrag" onClick={() => window.electron.browser.exit()} sx={{
-                    borderRadius: 0,
-                    ':hover': {
-                        bgcolor: 'error.main'
-                    }
-                }}>
-                    <ExitIcon width={18} height={18} />
-                </IconButton>
-            </Stack>
-        </Stack>
-    </AppBar>
+        <IconButton
+            LinkComponent={Link}
+            href="/app/dashboard"
+            sx={{ color: 'text.secondary' }}
+            className="noDrag"
+        >
+            <HomeRoundedIcon />
+        </IconButton>
+
+        <SearchBox />
+
+        <Space />
+
+        <AppMenu />
+
+        <Space />
+
+        <Box flex="1 1 auto" />
+
+        <IconButton
+            color="success"
+            className="noDrag"
+            onClick={async () => {
+                const res = await window.electron?.sessions?.createLocal?.({
+                    name: "Hippo Terminal",
+                });
+
+                if (!res) return toast.error("failed to create a local session for terminal.");
+
+                window.electron?.newTerminal(res.id)
+            }}
+        >
+            <TerminalIcon />
+        </IconButton>
+
+        <IconButton
+            LinkComponent={Link}
+            href="/app/settings"
+            sx={{ color: 'text.secondary' }}
+            className="noDrag"
+        >
+            <SettingsRoundedIcon />
+        </IconButton>
+
+    </Stack>
+}
+
+
+function Space() {
+    return <Box sx={{ width: 10 }} />
 }

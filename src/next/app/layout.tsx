@@ -3,10 +3,7 @@ import "@xterm/xterm/css/xterm.css";
 import type { ReactNode } from 'react';
 import InitColorSchemeScript from '@mui/material/InitColorSchemeScript';
 import ThemeRegistry from 'theme/ThemeRegistry';
-import MainLayout from 'layouts';
 import { NoSsr } from "@mui/material";
-import { Toaster } from 'sonner';
-import { DeployProvider } from "@next/deploy/provider";
 
 export const metadata = {
   title: 'Pro Project Manager',
@@ -20,12 +17,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <InitColorSchemeScript attribute="class" defaultMode='dark' />
         <ThemeRegistry>
           <NoSsr>
-            <DeployProvider>
-              <MainLayout>
-                {children}
-                <Toaster />
-              </MainLayout>
-            </DeployProvider>
+            {children}
           </NoSsr>
         </ThemeRegistry>
       </body>

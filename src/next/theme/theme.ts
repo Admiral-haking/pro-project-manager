@@ -1,10 +1,10 @@
 'use client';
 
 import { alpha, createTheme } from '@mui/material/styles';
-import { Rubik, Vazirmatn } from 'next/font/google';
+import { Oxygen, Vazirmatn } from 'next/font/google';
 
-const rubik = Rubik({
-  weight: ['400', '600', '800'],
+const rubik = Oxygen({
+  weight: ['400', '300', '700'],
   display: 'swap',
   preload: true,
   subsets: ['latin'],
@@ -17,28 +17,24 @@ const vazirmatn = Vazirmatn({
   subsets: ['arabic'],
 });
 
-const LINK_COLOR = 'hsl(210, 100%, 66%)';
+const LINK_COLOR = 'hsla(210, 90%, 70%, 1.00)';
 
 const theme = createTheme({
-  shape: { borderRadius: 12 },
-  defaultColorScheme: "dark",
+  shape: { borderRadius: 14 },
   typography: {
     fontFamily: `${rubik.style.fontFamily}, ${vazirmatn.style.fontFamily}`,
   },
-  colorSchemes: {
-    dark: {
-      palette: {
-        background: { default: '#1f2024ff', paper: '#191c22ff' },
-        text: { primary: '#ffffffff', secondary: 'rgba(255,255,255,0.72)' },
-        primary: { main: '#27f885ff', contrastText: '#1d1d1dff' },
-        secondary: { main: '#3294e4ff' },
-        info: { main: '#4DD0E1' },
-        success: { main: '#66BB6A' },
-        warning: { main: '#FFB74D' },
-        error: { main: '#EF5350' },
-        divider: 'rgba(255,255,255,0.15)',
-      },
-    },
+
+  palette: {
+    background: { default: '#000000', paper: '#010101' },
+    text: { primary: '#ffffffff', secondary: 'rgba(177, 177, 177, 0.96)' },
+    primary: { main: '#0ffb9e', contrastText: '#000000' },
+    secondary: { main: '#c3e652', contrastText: '#000000' },
+    info: { main: '#0f89fb', contrastText: '#FFFFFF' },
+    success: { main: '#1fe471', contrastText: '#000000' },
+    warning: { main: '#FFB74D', contrastText: '#000000' },
+    error: { main: '#f77270', contrastText: '#000000' },
+    divider: 'rgba(255, 255, 255, 0.27)',
   },
   cssVariables: {
     colorSchemeSelector: 'class',
@@ -51,28 +47,22 @@ const theme = createTheme({
     },
     MuiButton: {
       defaultProps: {
-        color: 'inherit',
-      },
+        color: 'primary',
+        sx: {
+          textTransform: 'none'
+        }
+      }
     },
     MuiIconButton: {
       defaultProps: {
         color: 'inherit',
       },
     },
-    MuiPaper: {
+    MuiTableCell: {
       styleOverrides: {
-        root: ({ theme }) => ({
-          '&.glassy': {
-
-            backgroundColor: alpha(theme.palette.background.paper, .25),
-            backdropFilter: 'blur(7px)',
-          },
-          '&.glassy-dark': {
-
-            backgroundColor: alpha("#000000", .45),
-            backdropFilter: 'blur(10px)',
-          }
-        })
+        root: {
+          border: 'none'
+        }
       }
     },
     MuiCssBaseline: {
@@ -93,16 +83,6 @@ const theme = createTheme({
           color: LINK_COLOR,
           textDecoration: 'none',
         },
-      },
-    },
-    MuiAppBar: {
-      styleOverrides: {
-        root: ({ theme: muiTheme }) => ({
-          backgroundImage: 'none',
-          borderBottomColor: muiTheme.palette.divider,
-          borderBottomWidth: 1,
-          borderBottomStyle: 'solid',
-        }),
       },
     },
   },

@@ -82,7 +82,8 @@ The builder configuration in `package.json` also defines Windows packaging (`nsi
 ## Troubleshooting
 - **Electron fails to start after install**: re-run `npm install` ensuring `electron-rebuild` has the required platform toolchain.
 - **Blank window in production build**: confirm that `npm run build:next` (invoked by `npm run build`) produces the static export under `out/` before packaging.
-- **Mongo connection issues**: check `MONGODB_URI` and whether the database requires authentication. The connection logic lives in `src/electron/model/index.ts`.
+- **Mongo connection issues**: check `MONGODB_URI` and whether the database requires authentication. The connection logic lives in `src/electron/backend/connection.ts`.
+- On first launch, if no Mongo URI is present, the app opens the `/mongo-uri` config screen (Next) to collect and store the connection string locally.
 
 ## License
 No license file is present; treat the code as proprietary unless a license is added.

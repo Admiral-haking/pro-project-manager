@@ -1,146 +1,195 @@
-import { IServer } from "@electron/model/server";
-import { ISetting } from "@electron/model/settings";
-import { Box, Button, Chip, Grid, Menu, MenuItem, Typography } from "@mui/material";
-import { SETTINGS } from "@next/constants/settings";
-import { useTerminal } from "@next/terminal";
+"use client"
+import { alpha, Box, Button, Chip, Grid, IconButton, Stack, Typography } from "@mui/material";
 import Link from "next/link";
-import React from "react";
-import { toast } from "sonner";
+import { mockServers } from "../mock/servers";
+import { TerminalIcon } from "@next/components/icons";
 
 
-export default function ServersShortcuts({ servers }: { servers: IServer[] }) {
-    return <Grid container spacing={2}>
-        {
-            servers.slice(0, 4).map(item => <Grid key={`${item._id}`} size={{ xs: 12, sm: 6 }} >
-                <ServerShortcut server={item} />
-            </Grid>)
-        }
-    </Grid>
-}
 
-export function ServerShortcut({ server }: { server: IServer }) {
-    const { create } = useTerminal();
-    const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-    const open = Boolean(anchorEl);
+export default function DashboardServers() {
 
-    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = async (e: React.MouseEvent<HTMLLIElement, MouseEvent>) => {
-        setAnchorEl(null);
-        try {
-            const bash = `ssh ${server.user}@${server.host} -p ${server.port}`;
-
-            const settings = await window.electron.db.find<ISetting>("Setting");
-
-            const terminalExternal = settings.find(x => x.key === SETTINGS.terminal)
-            const terminalExternalProxied = settings.find(x => x.key === SETTINGS.proxyTerminal)
-
-            switch ((e.target as any).dataset.id) {
-                case "internal-proxied":
-                    create(`${server.user}@${server.host}`, `proxychains4 ${bash}`)
-                    break;
-                case "external":
-                    if (terminalExternal) {
-                        const [script, ...args] = terminalExternal.value.split(" ").map(x => x.replace("$1", bash)).filter(Boolean);
-                        await window.electron.terminal.execute(script, args)
-                    }
-                    else toast.warning("terminal is not configured in settings")
-                    break;
-                case "external-proxied":
-                    if (terminalExternalProxied) {
-                        const [script, ...args] = terminalExternalProxied.value.split(" ").map(x => x.replace("$1", bash)).filter(Boolean);
-                        await window.electron.terminal.execute(script, args)
-                    }
-                    else toast.warning("terminal is not configured in settings")
-                    break;
-
-                case "internal":
-                    create(`${server.user}@${server.host}`, `${bash}`)
-                    break;
-
-                default:
-                    break;
-            }
-        }
-        catch (err) {
-            toast.error(err instanceof Error ? err.message : "cannot run the command.")
-        }
-    };
-
-
-    return <>
-        <Button
-            aria-label="run ssh" onClick={handleClick}
-            sx={{
-                height: 200,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: 'text.primary',
-                position: 'relative',
-                overflow: 'hidden',
-                flexDirection: 'column',
-                width: '100%',
-                gap: .5
-            }}
+    const remain = mockServers.slice(0, 6)
+    return (
+        <Box
+            sx={theme => ({
+                position: "relative",
+                overflow: "hidden",
+                borderRadius: 2,
+                bgcolor: alpha(theme.palette.background.paper, 0.9),
+                border: `1px solid ${theme.palette.divider}`,
+                boxShadow: `0 20px 60px ${alpha(theme.palette.common.black, 0.25)}`,
+                p: 2.5,
+                minHeight: 320,
+                maxHeight: 500,
+                height: 500,
+                display: "flex",
+                flexDirection: "column",
+            })}
         >
-            <Box>
-                <Chip variant="filled" label={server.user} size="small" color={server.user === 'root' ? "error" : "primary"} sx={{ m: .5 }} />
-                <Chip variant="filled" label={server.host} size="small" sx={{ m: .5 }} />
-            </Box>
-            <Typography
-                variant="h6"
-                fontWeight="bold"
-                textAlign="center"
-                sx={{
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    maxWidth: '90%'
-                }}
-            >{server.title}</Typography>
-            <Typography
-                variant="caption"
-                fontWeight="bold"
-                textAlign="center"
-                color="text.secondary"
-                sx={{
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    maxWidth: '90%'
-                }}
-            >{server.user}@{server.host} -p {server.port}</Typography>
-            <BgStyle />
-        </Button>
+            <Box
+                sx={theme => ({
+                    position: "absolute",
+                    inset: "-25% -10% auto auto",
+                    height: 200,
+                    width: 200,
+                    background: `radial-gradient(circle at 30% 30%, ${alpha(theme.palette.success.main, 0.28)}, transparent 65%)`,
+                    filter: "blur(8px)",
+                    zIndex: 0,
+                })}
+            />
+            <Box
+                sx={theme => ({
+                    position: "absolute",
+                    inset: "auto auto -30% -10%",
+                    height: 220,
+                    width: 220,
+                    background: `radial-gradient(circle at 70% 70%, ${alpha(theme.palette.info.main, 0.25)}, transparent 60%)`,
+                    filter: "blur(10px)",
+                    zIndex: 0,
+                })}
+            />
 
-        <Menu
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-        >
-            <MenuItem onClick={handleClose} data-id="internal">App Terminal</MenuItem>
-            <MenuItem onClick={handleClose} data-id="internal-proxied">Proxied App Terminal</MenuItem>
-            <MenuItem onClick={handleClose} data-id="external">External Terminal</MenuItem>
-            <MenuItem onClick={handleClose} data-id="external-proxied">Proxied External Terminal</MenuItem>
-        </Menu>
-    </>
-}
+            <Stack gap={1.5} sx={{ position: "relative", zIndex: 1, maxHeight: '100%' }}>
+                <Stack direction="row" alignItems="center" gap={1}>
+                    <Typography variant="h6" fontWeight="bold">
+                        Servers
+                    </Typography>
+                    <Chip
+                        label="Fleet pulse"
+                        size="small"
+                        color="success"
+                        sx={theme => ({
+                            bgcolor: alpha(theme.palette.success.main, 0.2),
+                            color: theme.palette.success.main,
+                        })}
+                    />
+                    <Box flex="1 1 auto" />
+                    <Button
+                        LinkComponent={Link}
+                        href="/app/servers"
+                        size="small"
+                        endIcon={<svg xmlns="http://www.w3.org/2000/svg" width={16} height={16} viewBox="0 0 24 24">
+                            <path fill="currentColor" d="M8.707 5.293a1 1 0 1 0-1.414 1.414L12.586 12l-5.293 5.293a1 1 0 0 0 1.414 1.414l6-6a1 1 0 0 0 0-1.414z" />
+                        </svg>}
+                    >
+                        Manage
+                    </Button>
+                </Stack>
+                <Typography variant="body2" color="text.secondary">
+                    Track hosts, roots, and teammates at a glance—ready for a fast terminal hop.
+                </Typography>
 
 
-function BgStyle({ }) {
-    return <>
-        <Box sx={theme => ({
-            position: 'absolute',
-            top: 0,
-            right: 0,
-            left: 0,
-            bottom: 0,
-            background: `linear-gradient(45deg,${theme.palette.success.main} 0%, transparent 100%)`,
-            opacity: .4,
-            zIndex: -1
-        })} />
-    </>
+                <Box sx={{ mt: 1.5, flex: 1, overflowY: "scroll", position: "relative", zIndex: 1 }}>
+                    <Grid container spacing={1.25}>
+                        {remain.map((server, idx) => {
+                            const hasRoot = server.users.some(user => user.username === "root");
+                            return (
+                                <Grid key={server._id} size={{ xs: 12 }}>
+                                    <Box
+                                        sx={theme => ({
+                                            p: 1.5,
+                                            borderRadius: 1.5,
+                                            border: `1px solid ${theme.palette.divider}`,
+                                            bgcolor: alpha(theme.palette.background.default, 0.9),
+                                            backdropFilter: "blur(6px)",
+                                            transition: "transform 160ms ease, border-color 160ms ease",
+                                            ":hover": {
+                                                transform: "translateY(-2px)",
+                                                borderColor: alpha(theme.palette.success.main, 0.6),
+                                            },
+                                        })}
+                                    >
+                                        <Stack gap={1}>
+                                            <Stack direction="row" alignItems="center" gap={1.25}>
+                                                <Box
+                                                    sx={theme => ({
+                                                        height: 36,
+                                                        width: 36,
+                                                        borderRadius: "50%",
+                                                        display: "grid",
+                                                        placeItems: "center",
+                                                        background: `linear-gradient(135deg, ${alpha(theme.palette.success.main, 0.25)}, ${alpha(theme.palette.info.main, 0.12)})`,
+                                                        color: theme.palette.success.main,
+                                                        fontWeight: 700,
+                                                    })}
+                                                >
+                                                    {(idx + 1).toString().padStart(2, "0")}
+                                                </Box>
+                                                <Box flex="1 1 auto">
+                                                    <Stack direction="row" alignItems="center" gap={1}>
+                                                        <Typography fontWeight="bold">{server.name}</Typography>
+                                                        {hasRoot && (
+                                                            <Chip
+                                                                label="root"
+                                                                size="small"
+                                                                color="error"
+                                                                variant="outlined"
+                                                                sx={theme => ({
+                                                                    borderColor: alpha(theme.palette.error.main, 0.6),
+                                                                    bgcolor: alpha(theme.palette.error.main, 0.2),
+                                                                    color: theme.palette.error.main,
+                                                                    textTransform: "uppercase",
+                                                                    letterSpacing: 0.5,
+                                                                    fontWeight: 700,
+                                                                    fontSize: 9
+                                                                })}
+                                                            />
+                                                        )}
+                                                    </Stack>
+                                                    <Typography variant="caption" color="text.secondary">
+                                                        {server.host}
+                                                    </Typography>
+                                                </Box>
+                                                <Chip
+                                                    label={`${server.users.length} users`}
+                                                    size="small"
+                                                    color="success"
+                                                    sx={theme => ({
+                                                        bgcolor: alpha(theme.palette.success.main, 0.2),
+                                                        color: theme.palette.success.main,
+                                                        fontWeight: 700,
+                                                    })}
+                                                />
+                                            </Stack>
+                                            <Stack gap={0.75} sx={theme => ({
+                                                p: 1,
+                                                borderLeft: `1px dashed ${theme.palette.divider}`,
+                                            })}>
+                                                {server.users.map(user => (
+                                                    <Stack
+                                                        key={user.username}
+                                                        direction="row"
+                                                        alignItems="center"
+                                                        gap={1}
+                                                        sx={theme => ({
+                                                            p: 0.75,
+                                                            borderRadius: 1,
+                                                            transition: "background 120ms ease",
+                                                            ":hover": { bgcolor: alpha(theme.palette.success.main, 0.08) },
+                                                        })}
+                                                    >
+                                                        <Typography
+                                                            variant="caption"
+                                                            color={user.username === "root" ? "error.main" : "text.primary"}
+                                                            sx={{ flex: 1, fontWeight: 600 }}
+                                                        >
+                                                            {user.username}
+                                                        </Typography>
+                                                        <IconButton size="small" color="success">
+                                                            <TerminalIcon width="16" height="16" />
+                                                        </IconButton>
+                                                    </Stack>
+                                                ))}
+                                            </Stack>
+                                        </Stack>
+                                    </Box>
+                                </Grid>
+                            );
+                        })}
+                    </Grid>
+                </Box>
+            </Stack>
+        </Box>
+    )
 }

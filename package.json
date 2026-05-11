@@ -28,9 +28,10 @@
     "@emotion/styled": "11.14.1",
     "@hookform/resolvers": "^5.2.2",
     "@monaco-editor/react": "^4.7.0",
+    "@mui/icons-material": "^7.3.6",
     "@mui/lab": "^7.0.0-beta.17",
-    "@mui/material": "7.3.3",
-    "@mui/material-nextjs": "^7.3.3",
+    "@mui/material": "7.3.6",
+    "@mui/material-nextjs": "^7.3.6",
     "@tiptap/core": "^2.4.0",
     "@tiptap/extension-code-block": "^2.4.0",
     "@tiptap/extension-code-block-lowlight": "^2.4.0",
@@ -43,15 +44,17 @@
     "@tiptap/starter-kit": "^2.4.0",
     "@xterm/addon-fit": "^0.10.0",
     "@xterm/xterm": "^5.5.0",
+    "apexcharts": "^5.3.6",
     "axios": "^1.12.2",
     "dayjs": "^1.11.18",
-    "easy-llm-call": "^2.0.6",
+    "easy-llm-call": "^2.2.7",
     "express": "^5.1.0",
     "monaco-editor": "^0.53.0",
     "mongoose": "8.18.1",
-    "next": "15.5.3",
+    "next": "15.5.9",
     "node-pty": "^1.0.0",
     "react": "19.1.1",
+    "react-apexcharts": "^1.9.0",
     "react-dom": "19.1.1",
     "react-dropzone": "^14.3.8",
     "react-hook-form": "^7.63.0",
@@ -82,7 +85,7 @@
   "build": {
     "appId": "com.hippogriff.promanager",
     "productName": "Project Manager Pro",
-    "icon": "assets/hippogriff.png",
+    "icon": "assets/icon.png",
     "asar": true,
     "files": [
       "dist/**",
@@ -93,7 +96,7 @@
       "node_modules/**"
     ],
     "linux": {
-      "icon": "assets/hippogriff.png",
+      "icon": "assets/icon.png",
       "category": "Utility",
       "target": [
         {
@@ -105,7 +108,7 @@
       ]
     },
     "win": {
-      "icon": "assets/hippogriff.png",
+      "icon": "assets/icon.png",
       "target": [
         {
           "target": "nsis",
