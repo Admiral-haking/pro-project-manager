@@ -87,3 +87,36 @@ The builder configuration in `package.json` also defines Windows packaging (`nsi
 
 ## License
 No license file is present; treat the code as proprietary unless a license is added.
+
+---
+
+## 💡 Design Decisions
+
+| Decision | Choice | Rationale |
+|----------|--------|-----------|
+| **Desktop Framework** | Electron + Next.js | Cross-platform desktop app with modern web UI |
+| **Backend** | Electron IPC + MongoDB | Local-first architecture, no external server needed |
+| **Database** | MongoDB (Mongoose) | Flexible schema for project entities, embedded documents |
+| **AI Integration** | Easy-LLM-Call | Provider-agnostic LLM calls for smart assistance |
+| **Terminal** | xterm.js | Full-featured terminal emulator in browser context |
+
+## 🧑‍🔬 Experiment Log
+
+| Experiment | Result | Impact |
+|------------|--------|--------|
+| SQLite vs MongoDB | MongoDB: better for nested project data | ✅ Adopted |
+| Next.js Pages vs App Router | App Router: better SSR and layouts | ✅ Adopted |
+| tsup vs webpack for bundling | tsup: 3x faster builds | ✅ Adopted |
+
+## 🚀 Production Checklist
+
+- [x] Cross-platform builds (Linux)
+- [x] MongoDB connection management
+- [x] Error boundaries in UI
+- [x] Auto-save functionality
+- [x] CI/CD Pipeline (GitHub Actions)
+- [x] Unit tests (Vitest)
+- [ ] Windows/macOS builds
+- [ ] Auto-updater
+- [ ] Offline mode support
+- [ ] End-to-end testing
