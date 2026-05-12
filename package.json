@@ -21,7 +21,9 @@
     "build:electron": "tsup --config tsup.config.ts",
     "build:next": "NODE_ENV=production next build ./src/next && mv ./src/next/out ./",
     "build:linux": "electron-builder --linux",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
@@ -80,6 +82,7 @@
     "electron-builder": "26.0.12",
     "tsup": "8.5.0",
     "typescript": "5.9.2",
+    "vitest": "^4.1.6",
     "wait-on": "9.0.1"
   },
   "build": {
